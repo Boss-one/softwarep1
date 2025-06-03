@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HEALTSCOPEAI</title>
+    <!-- Favicon, actualmente vacío -->
+    <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64," />
+    <!-- Conexión a Google Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="" />
+    <link
+      rel="stylesheet"
+      as="style"
+      onload="this.rel='stylesheet'"
+      href="https://fonts.googleapis.com/css2?display=swap&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900&amp;family=Plus+Jakarta+Sans%3Awght%40400%3B500%3B700%3B800"
+    />
+    <!-- Script de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <style>
+      /* Estilos globales */
+      body, html {
+        height: 100%;
+        margin: 0;
+        font-family: "Plus Jakarta Sans", "Noto Sans", sans-serif;
+        background-color: #f9fafb; /* Un color de fondo base ligero */
+      }
+      /* Contenedor para cada vista de página */
+      .page-view {
+        /* min-height: 100vh; podría no ser necesario si el contenido interno ya lo maneja */
+        /* La clase 'hidden' de Tailwind controlará la visibilidad */
+      }
+      /* Estilo para el botón de select (dropdown) usado en la vista de subida de imagen */
+      .custom-select-style {
+        --select-button-svg: url('data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2724px%27 height=%2724px%27 fill=%27rgb(117,117,117)%27 viewBox=%270 0 256 256%27%3e%3cpath d=%27M181.66,170.34a8,8,0,0,1,0,11.32l-48,48a8,8,0,0,1-11.32,0l-48-48a8,8,0,0,1,11.32-11.32L128,212.69l42.34-42.35A8,8,0,0,1,181.66,170.34Zm-96-84.68L128,43.31l42.34,42.35a8,8,0,0,0,11.32-11.32l-48-48a8,8,0,0,0-11.32,0l-48,48A8,8,0,0,0,85.66,85.66Z%27%3e%3c/path%3e%3c/svg%3e');
+      }
+      /* Estilo para el botón de navegación activo */
+      .nav-button.active {
+        background-color: #4a5568; /* Un gris más oscuro para el botón activo */
+      }
+    </style>
+</head>
+<body>
+    <!-- Barra de navegación principal de la aplicación -->
+    <nav class="bg-slate-800 text-white p-4 flex justify-center space-x-2 sm:space-x-4 sticky top-0 z-50 shadow-md">
+        <button data-target="dashboard-view" class="nav-button px-3 py-2 rounded hover:bg-slate-700 text-sm sm:text-base">Dashboard</button>
+        <button data-target="historial-view" class="nav-button px-3 py-2 rounded hover:bg-slate-700 text-sm sm:text-base">Historial Paciente</button>
+        <button data-target="upload-view" class="nav-button px-3 py-2 rounded hover:bg-slate-700 text-sm sm:text-base">Subir Imagen</button>
+    </nav>
+
+    <!-- Contenedor para la vista del Dashboard -->
+    <div id="dashboard-view" class="page-view">
+      <div class="relative flex size-full min-h-screen flex-col bg-white group/design-root overflow-x-hidden">
+        <div class="layout-container flex h-full grow flex-col">
+          <div class="gap-1 px-6 flex flex-1 justify-center py-5">
+            <div class="layout-content-container flex flex-col w-80">
+              <div class="flex h-full min-h-[700px] flex-col justify-between bg-white p-4 rounded-lg shadow-md">
+                <div class="flex flex-col gap-4">
+                  <div class="flex flex-col">
+                    <h1 class="text-[#141414] text-base font-medium leading-normal">HEALTSCOPEAI</h1>
+                    <p class="text-[#757575] text-sm font-normal leading-normal">Dr. Royer De La Cruz</p>
+                  </div>
+                  <div class="flex flex-col gap-2">
+                    <div class="flex items-center gap-3 px-3 py-2 rounded-full bg-[#f2f2f2] cursor-pointer hover:bg-gray-200 transition-colors">
+                      <div class="text-[#141414]" data-icon="House" data-size="24px" data-weight="fill">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                          <path d="M224,115.55V208a16,16,0,0,1-16,16H168a16,16,0,0,1-16-16V168a8,8,0,0,0-8-8H112a8,8,0,0,0-8,8v40a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V115.55a16,16,0,0,1,5.17-11.78l80-75.48.11-.11a16,16,0,0,1,21.53,0,1.14,1.14,0,0,0,.11.11l80,75.48A16,16,0,0,1,224,115.55Z"></path>
+                        </svg>
+                      </div>
+                      <p class="text-[#141414] text-sm font-medium leading-normal">Panel</p>
+                    </div>
+                    <div class="flex items-center gap-3 px-3 py-2 rounded-full hover:bg-gray-100 cursor-pointer transition-colors">
+                      <div class="text-[#141414]" data-icon="Users" data-size="24px" data-weight="regular">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                          <path d="M117.25,157.92a60,60,0,1,0-66.5,0A95.83,95.83,0,0,0,3.53,195.63a8,8,0,1,0,13.4,8.74,80,80,0,0,1,134.14,0,8,8,0,0,0,13.4-8.74A95.83,95.83,0,0,0,117.25,157.92ZM40,108a44,44,0,1,1,44,44A44.05,44.05,0,0,1,40,108Zm210.14,98.7a8,8,0,0,1-11.07-2.33A79.83,79.83,0,0,0,172,168a8,8,0,0,1,0-16,44,44,0,1,0-16.34-84.87,8,8,0,1,1-5.94-14.85,60,60,0,0,1,55.53,105.64,95.83,95.83,0,0,1,47.22,37.71A8,8,0,0,1,250.14,206.7Z"></path>
+                        </svg>
+                      </div>
+                      <p class="text-[#141414] text-sm font-medium leading-normal">Pacientes</p>
+                    </div>
+                    <div class="flex items-center gap-3 px-3 py-2 rounded-full hover:bg-gray-100 cursor-pointer transition-colors">
+                      <div class="text-[#141414]" data-icon="Calendar" data-size="24px" data-weight="regular">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                          <path d="M208,32H184V24a8,8,0,0,0-16,0v8H88V24a8,8,0,0,0-16,0v8H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM72,48v8a8,8,0,0,0,16,0V48h80v8a8,8,0,0,0,16,0V48h24V80H48V48ZM208,208H48V96H208V208Zm-96-88v64a8,8,0,0,1-16,0V132.94l-4.42,2.22a8,8,0,0,1-7.16-14.32l16-8A8,8,0,0,1,112,120Zm59.16,30.45L152,176h16a8,8,0,0,1,0,16H136a8,8,0,0,1-6.4-12.8l28.78-38.37A8,8,0,1,0,145.07,132a8,8,0,1,1-13.85-8A24,24,0,0,1,176,136,23.76,23.76,0,0,1,171.16,150.45Z"></path>
+                        </svg>
+                      </div>
+                      <p class="text-[#141414] text-sm font-medium leading-normal">Citas</p>
+                    </div>
+                    <div class="flex items-center gap-3 px-3 py-2 rounded-full hover:bg-gray-100 cursor-pointer transition-colors">
+                      <div class="text-[#141414]" data-icon="ChatCircleDots" data-size="24px" data-weight="regular">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                          <path d="M140,128a12,12,0,1,1-12-12A12,12,0,0,1,140,128ZM84,116a12,12,0,1,0,12,12A12,12,0,0,0,84,116Zm88,0a12,12,0,1,0,12,12A12,12,0,0,0,172,116Zm60,12A104,104,0,0,1,79.12,219.82L45.07,231.17a16,16,0,0,1-20.24-20.24l11.35-34.05A104,104,0,1,1,232,128Zm-16,0A88,88,0,1,0,51.81,172.06a8,8,0,0,1,.66,6.54L40,216,77.4,203.53a7.85,7.85,0,0,1,2.53-.42,8,8,0,0,1,4,1.08A88,88,0,0,0,216,128Z"></path>
+                        </svg>
+                      </div>
+                      <p class="text-[#141414] text-sm font-medium leading-normal">Mensajes</p>
+                    </div>
+                    <div class="flex items-center gap-3 px-3 py-2 rounded-full hover:bg-gray-100 cursor-pointer transition-colors">
+                      <div class="text-[#141414]" data-icon="Gear" data-size="24px" data-weight="regular">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                          <path d="M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160Zm88-29.84q.06-2.16,0-4.32l14.92-18.64a8,8,0,0,0,1.48-7.06,107.21,107.21,0,0,0-10.88-26.25,8,8,0,0,0-6-3.93l-23.72-2.64q-1.48-1.56-3-3L186,40.54a8,8,0,0,0-3.94-6,107.71,107.71,0,0,0-26.25-10.87,8,8,0,0,0-7.06,1.49L130.16,40Q128,40,125.84,40L107.2,25.11a8,8,0,0,0-7.06-1.48A107.6,107.6,0,0,0,73.89,34.51a8,8,0,0,0-3.93,6L67.32,64.27q-1.56,1.49-3,3L40.54,70a8,8,0,0,0-6,3.94,107.71,107.71,0,0,0-10.87,26.25,8,8,0,0,0,1.49,7.06L40,125.84Q40,128,40,130.16L25.11,148.8a8,8,0,0,0-1.48,7.06,107.21,107.21,0,0,0,10.88,26.25,8,8,0,0,0,6,3.93l23.72,2.64q1.49,1.56,3,3L70,215.46a8,8,0,0,0,3.94,6,107.71,107.71,0,0,0,26.25,10.87,8,8,0,0,0,7.06-1.49L125.84,216q2.16.06,4.32,0l18.64,14.92a8,8,0,0,0,7.06,1.48,107.21,107.21,0,0,0,26.25-10.88,8,8,0,0,0,3.93-6l2.64-23.72q1.56-1.48,3-3L215.46,186a8,8,0,0,0,6-3.94,107.71,107.71,0,0,0,10.87-26.25,8,8,0,0,0-1.49-7.06Zm-16.1-6.5a73.93,73.93,0,0,1,0,8.68,8,8,0,0,0,1.74,5.48l14.19,17.73a91.57,91.57,0,0,1-6.23,15L187,173.11a8,8,0,0,0-5.1,2.64,74.11,74.11,0,0,1-6.14,6.14,8,8,0,0,0-2.64,5.1l-2.51,22.58a91.32,91.32,0,0,1-15,6.23l-17.74-14.19a8,8,0,0,0-5-1.75h-.48a73.93,73.93,0,0,1-8.68,0,8,8,0,0,0-5.48,1.74L100.45,215.8a91.57,91.57,0,0,1-15-6.23L82.89,187a8,8,0,0,0-2.64-5.1,74.11,74.11,0,0,1-6.14-6.14,8,8,0,0,0-5.1-2.64L46.43,170.6a91.32,91.32,0,0,1-6.23-15l14.19-17.74a8,8,0,0,0,1.74-5.48,73.93,73.93,0,0,1,0-8.68,8,8,0,0,0-1.74-5.48L40.2,100.45a91.57,91.57,0,0,1,6.23-15L69,82.89a8,8,0,0,0,5.1-2.64,74.11,74.11,0,0,1,6.14-6.14A8,8,0,0,0,82.89,69L85.4,46.43a91.32,91.32,0,0,1,15-6.23l17.74,14.19a8,8,0,0,0,5.48,1.74,73.93,73.93,0,0,1,8.68,0,8,8,0,0,0,5.48-1.74L155.55,40.2a91.57,91.57,0,0,1,15,6.23L173.11,69a8,8,0,0,0,2.64,5.1,74.11,74.11,0,0,1,6.14,6.14,8,8,0,0,0,5.1,2.64l22.58,2.51a91.32,91.32,0,0,1,6.23,15l-14.19,17.74A8,8,0,0,0,199.87,123.66Z"></path>
+                        </svg>
+                      </div>
+                      <p class="text-[#141414] text-sm font-medium leading-normal">Ajustes</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
+              <div class="flex flex-wrap justify-between gap-3 p-4">
+                <p class="text-[#141414] tracking-light text-[32px] font-bold leading-tight min-w-72">Panel</p>
+              </div>
+              <h2 class="text-[#141414] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Pacientes</h2>
+              <div class="px-4 py-3 @container">
+                <div class="flex overflow-hidden rounded-xl border border-[#e0e0e0] bg-white shadow">
+                  <table class="flex-1">
+                    <thead>
+                      <tr class="bg-white">
+                        <th class="table-7d9bf5ff-e272-4f16-9ec1-4a06fdf3a8b7-column-120 px-4 py-3 text-left text-[#141414] w-[400px] text-sm font-medium leading-normal">Nombre</th>
+                        <th class="table-7d9bf5ff-e272-4f16-9ec1-4a06fdf3a8b7-column-240 px-4 py-3 text-left text-[#141414] w-[400px] text-sm font-medium leading-normal">Edad</th>
+                        <th class="table-7d9bf5ff-e272-4f16-9ec1-4a06fdf3a8b7-column-360 px-4 py-3 text-left text-[#141414] w-[400px] text-sm font-medium leading-normal">Género</th>
+                        <th class="table-7d9bf5ff-e272-4f16-9ec1-4a06fdf3a8b7-column-480 px-4 py-3 text-left text-[#141414] w-[400px] text-sm font-medium leading-normal">Última Visita</th>
+                        <th class="table-7d9bf5ff-e272-4f16-9ec1-4a06fdf3a8b7-column-600 px-4 py-3 text-left text-[#141414] w-60 text-sm font-medium leading-normal">Estado</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr class="border-t border-t-[#e0e0e0] hover:bg-gray-50 transition-colors">
+                        <td class="table-7d9bf5ff-e272-4f16-9ec1-4a06fdf3a8b7-column-120 h-[72px] px-4 py-2 w-[400px] text-[#141414] text-sm font-normal leading-normal">Carlos Herrera</td>
+                        <td class="table-7d9bf5ff-e272-4f16-9ec1-4a06fdf3a8b7-column-240 h-[72px] px-4 py-2 w-[400px] text-[#757575] text-sm font-normal leading-normal">32</td>
+                        <td class="table-7d9bf5ff-e272-4f16-9ec1-4a06fdf3a8b7-column-360 h-[72px] px-4 py-2 w-[400px] text-[#757575] text-sm font-normal leading-normal">Masculino</td>
+                        <td class="table-7d9bf5ff-e272-4f16-9ec1-4a06fdf3a8b7-column-480 h-[72px] px-4 py-2 w-[400px] text-[#757575] text-sm font-normal leading-normal">Hace 2 días</td>
+                        <td class="table-7d9bf5ff-e272-4f16-9ec1-4a06fdf3a8b7-column-600 h-[72px] px-4 py-2 w-60 text-sm font-normal leading-normal">
+                          <button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-8 px-4 bg-[#f2f2f2] text-[#141414] text-sm font-medium leading-normal w-full hover:bg-gray-300 transition-colors">
+                            <span class="truncate">Programado</span>
+                          </button>
+                        </td>
+                      </tr>
+                      <tr class="border-t border-t-[#e0e0e0] hover:bg-gray-50 transition-colors">
+                        <td class="table-7d9bf5ff-e272-4f16-9ec1-4a06fdf3a8b7-column-120 h-[72px] px-4 py-2 w-[400px] text-[#141414] text-sm font-normal leading-normal">Isabel Mendoza</td>
+                        <td class="table-7d9bf5ff-e272-4f16-9ec1-4a06fdf3a8b7-column-240 h-[72px] px-4 py-2 w-[400px] text-[#757575] text-sm font-normal leading-normal">45</td>
+                        <td class="table-7d9bf5ff-e272-4f16-9ec1-4a06fdf3a8b7-column-360 h-[72px] px-4 py-2 w-[400px] text-[#757575] text-sm font-normal leading-normal">Femenino</td>
+                        <td class="table-7d9bf5ff-e272-4f16-9ec1-4a06fdf3a8b7-column-480 h-[72px] px-4 py-2 w-[400px] text-[#757575] text-sm font-normal leading-normal">Hace 1 semana</td>
+                        <td class="table-7d9bf5ff-e272-4f16-9ec1-4a06fdf3a8b7-column-600 h-[72px] px-4 py-2 w-60 text-sm font-normal leading-normal">
+                          <button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-8 px-4 bg-[#f2f2f2] text-[#141414] text-sm font-medium leading-normal w-full hover:bg-gray-300 transition-colors">
+                            <span class="truncate">Completado</span>
+                          </button>
+                        </td>
+                      </tr>
+                       <tr class="border-t border-t-[#e0e0e0] hover:bg-gray-50 transition-colors">
+                        <td class="table-7d9bf5ff-e272-4f16-9ec1-4a06fdf3a8b7-column-120 h-[72px] px-4 py-2 w-[400px] text-[#141414] text-sm font-normal leading-normal">Diego Castro</td>
+                        <td class="table-7d9bf5ff-e272-4f16-9ec1-4a06fdf3a8b7-column-240 h-[72px] px-4 py-2 w-[400px] text-[#757575] text-sm font-normal leading-normal">28</td>
+                        <td class="table-7d9bf5ff-e272-4f16-9ec1-4a06fdf3a8b7-column-360 h-[72px] px-4 py-2 w-[400px] text-[#757575] text-sm font-normal leading-normal">Masculino</td>
+                        <td class="table-7d9bf5ff-e272-4f16-9ec1-4a06fdf3a8b7-column-480 h-[72px] px-4 py-2 w-[400px] text-[#757575] text-sm font-normal leading-normal">Hace 3 semanas</td>
+                        <td class="table-7d9bf5ff-e272-4f16-9ec1-4a06fdf3a8b7-column-600 h-[72px] px-4 py-2 w-60 text-sm font-normal leading-normal">
+                          <button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-8 px-4 bg-[#f2f2f2] text-[#141414] text-sm font-medium leading-normal w-full hover:bg-gray-300 transition-colors">
+                            <span class="truncate">Programado</span>
+                          </button>
+                        </td>
+                      </tr>
+                      <tr class="border-t border-t-[#e0e0e0] hover:bg-gray-50 transition-colors">
+                        <td class="table-7d9bf5ff-e272-4f16-9ec1-4a06fdf3a8b7-column-120 h-[72px] px-4 py-2 w-[400px] text-[#141414] text-sm font-normal leading-normal">Ana Vargas</td>
+                        <td class="table-7d9bf5ff-e272-4f16-9ec1-4a06fdf3a8b7-column-240 h-[72px] px-4 py-2 w-[400px] text-[#757575] text-sm font-normal leading-normal">50</td>
+                        <td class="table-7d9bf5ff-e272-4f16-9ec1-4a06fdf3a8b7-column-360 h-[72px] px-4 py-2 w-[400px] text-[#757575] text-sm font-normal leading-normal">Femenino</td>
+                        <td class="table-7d9bf5ff-e272-4f16-9ec1-4a06fdf3a8b7-column-480 h-[72px] px-4 py-2 w-[400px] text-[#757575] text-sm font-normal leading-normal">Hace 1 mes</td>
+                        <td class="table-7d9bf5ff-e272-4f16-9ec1-4a06fdf3a8b7-column-600 h-[72px] px-4 py-2 w-60 text-sm font-normal leading-normal">
+                          <button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-8 px-4 bg-[#f2f2f2] text-[#141414] text-sm font-medium leading-normal w-full hover:bg-gray-300 transition-colors">
+                            <span class="truncate">Completado</span>
+                          </button>
+                        </td>
+                      </tr>
+                      <tr class="border-t border-t-[#e0e0e0] hover:bg-gray-50 transition-colors">
+                        <td class="table-7d9bf5ff-e272-4f16-9ec1-4a06fdf3a8b7-column-120 h-[72px] px-4 py-2 w-[400px] text-[#141414] text-sm font-normal leading-normal">Javier Morales</td>
+                        <td class="table-7d9bf5ff-e272-4f16-9ec1-4a06fdf3a8b7-column-240 h-[72px] px-4 py-2 w-[400px] text-[#757575] text-sm font-normal leading-normal">35</td>
+                        <td class="table-7d9bf5ff-e272-4f16-9ec1-4a06fdf3a8b7-column-360 h-[72px] px-4 py-2 w-[400px] text-[#757575] text-sm font-normal leading-normal">Masculino</td>
+                        <td class="table-7d9bf5ff-e272-4f16-9ec1-4a06fdf3a8b7-column-480 h-[72px] px-4 py-2 w-[400px] text-[#757575] text-sm font-normal leading-normal">Hace 2 meses</td>
+                        <td class="table-7d9bf5ff-e272-4f16-9ec1-4a06fdf3a8b7-column-600 h-[72px] px-4 py-2 w-60 text-sm font-normal leading-normal">
+                          <button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-8 px-4 bg-[#f2f2f2] text-[#141414] text-sm font-medium leading-normal w-full hover:bg-gray-300 transition-colors">
+                            <span class="truncate">Completado</span>
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <style>
+                  @container(max-width:120px){.table-7d9bf5ff-e272-4f16-9ec1-4a06fdf3a8b7-column-120{display: none;}}
+                  @container(max-width:240px){.table-7d9bf5ff-e272-4f16-9ec1-4a06fdf3a8b7-column-240{display: none;}}
+                  @container(max-width:360px){.table-7d9bf5ff-e272-4f16-9ec1-4a06fdf3a8b7-column-360{display: none;}}
+                  @container(max-width:480px){.table-7d9bf5ff-e272-4f16-9ec1-4a06fdf3a8b7-column-480{display: none;}}
+                  @container(max-width:600px){.table-7d9bf5ff-e272-4f16-9ec1-4a06fdf3a8b7-column-600{display: none;}}
+                </style>
+              </div>
+              <h2 class="text-[#141414] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Diagnósticos Recientes</h2>
+              <div class="px-4 py-3 @container">
+                <div class="flex overflow-hidden rounded-xl border border-[#e0e0e0] bg-white shadow">
+                  <table class="flex-1">
+                    <thead>
+                      <tr class="bg-white">
+                        <th class="table-28a7452e-771b-4294-87cc-8abebc5d776d-column-120 px-4 py-3 text-left text-[#141414] w-[400px] text-sm font-medium leading-normal">Paciente</th>
+                        <th class="table-28a7452e-771b-4294-87cc-8abebc5d776d-column-240 px-4 py-3 text-left text-[#141414] w-[400px] text-sm font-medium leading-normal">Diagnóstico</th>
+                        <th class="table-28a7452e-771b-4294-87cc-8abebc5d776d-column-360 px-4 py-3 text-left text-[#141414] w-[400px] text-sm font-medium leading-normal">Fecha</th>
+                        <th class="table-28a7452e-771b-4294-87cc-8abebc5d776d-column-480 px-4 py-3 text-left text-[#141414] w-60 text-sm font-medium leading-normal">Estado</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr class="border-t border-t-[#e0e0e0] hover:bg-gray-50 transition-colors">
+                        <td class="table-28a7452e-771b-4294-87cc-8abebc5d776d-column-120 h-[72px] px-4 py-2 w-[400px] text-[#141414] text-sm font-normal leading-normal">Carlos Herrera</td>
+                        <td class="table-28a7452e-771b-4294-87cc-8abebc5d776d-column-240 h-[72px] px-4 py-2 w-[400px] text-[#757575] text-sm font-normal leading-normal">Hipertensión</td>
+                        <td class="table-28a7452e-771b-4294-87cc-8abebc5d776d-column-360 h-[72px] px-4 py-2 w-[400px] text-[#757575] text-sm font-normal leading-normal">Hace 2 días</td>
+                        <td class="table-28a7452e-771b-4294-87cc-8abebc5d776d-column-480 h-[72px] px-4 py-2 w-60 text-sm font-normal leading-normal">
+                          <button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-8 px-4 bg-[#f2f2f2] text-[#141414] text-sm font-medium leading-normal w-full hover:bg-gray-300 transition-colors">
+                            <span class="truncate">Confirmado</span>
+                          </button>
+                        </td>
+                      </tr>
+                       <tr class="border-t border-t-[#e0e0e0] hover:bg-gray-50 transition-colors">
+                        <td class="table-28a7452e-771b-4294-87cc-8abebc5d776d-column-120 h-[72px] px-4 py-2 w-[400px] text-[#141414] text-sm font-normal leading-normal">Isabel Mendoza</td>
+                        <td class="table-28a7452e-771b-4294-87cc-8abebc5d776d-column-240 h-[72px] px-4 py-2 w-[400px] text-[#757575] text-sm font-normal leading-normal">Diabetes Tipo 2</td>
+                        <td class="table-28a7452e-771b-4294-87cc-8abebc5d776d-column-360 h-[72px] px-4 py-2 w-[400px] text-[#757575] text-sm font-normal leading-normal">Hace 1 semana</td>
+                        <td class="table-28a7452e-771b-4294-87cc-8abebc5d776d-column-480 h-[72px] px-4 py-2 w-60 text-sm font-normal leading-normal">
+                          <button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-8 px-4 bg-[#f2f2f2] text-[#141414] text-sm font-medium leading-normal w-full hover:bg-gray-300 transition-colors">
+                            <span class="truncate">Confirmado</span>
+                          </button>
+                        </td>
+                      </tr>
+                      <tr class="border-t border-t-[#e0e0e0] hover:bg-gray-50 transition-colors">
+                        <td class="table-28a7452e-771b-4294-87cc-8abebc5d776d-column-120 h-[72px] px-4 py-2 w-[400px] text-[#141414] text-sm font-normal leading-normal">Diego Castro</td>
+                        <td class="table-28a7452e-771b-4294-87cc-8abebc5d776d-column-240 h-[72px] px-4 py-2 w-[400px] text-[#757575] text-sm font-normal leading-normal">Asma</td>
+                        <td class="table-28a7452e-771b-4294-87cc-8abebc5d776d-column-360 h-[72px] px-4 py-2 w-[400px] text-[#757575] text-sm font-normal leading-normal">Hace 3 semanas</td>
+                        <td class="table-28a7452e-771b-4294-87cc-8abebc5d776d-column-480 h-[72px] px-4 py-2 w-60 text-sm font-normal leading-normal">
+                          <button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-8 px-4 bg-[#f2f2f2] text-[#141414] text-sm font-medium leading-normal w-full hover:bg-gray-300 transition-colors">
+                            <span class="truncate">Confirmado</span>
+                          </button>
+                        </td>
+                      </tr>
+                      <tr class="border-t border-t-[#e0e0e0] hover:bg-gray-50 transition-colors">
+                        <td class="table-28a7452e-771b-4294-87cc-8abebc5d776d-column-120 h-[72px] px-4 py-2 w-[400px] text-[#141414] text-sm font-normal leading-normal">Ana Vargas</td>
+                        <td class="table-28a7452e-771b-4294-87cc-8abebc5d776d-column-240 h-[72px] px-4 py-2 w-[400px] text-[#757575] text-sm font-normal leading-normal">Osteoartritis</td>
+                        <td class="table-28a7452e-771b-4294-87cc-8abebc5d776d-column-360 h-[72px] px-4 py-2 w-[400px] text-[#757575] text-sm font-normal leading-normal">Hace 1 mes</td>
+                        <td class="table-28a7452e-771b-4294-87cc-8abebc5d776d-column-480 h-[72px] px-4 py-2 w-60 text-sm font-normal leading-normal">
+                          <button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-8 px-4 bg-[#f2f2f2] text-[#141414] text-sm font-medium leading-normal w-full hover:bg-gray-300 transition-colors">
+                            <span class="truncate">Confirmado</span>
+                          </button>
+                        </td>
+                      </tr>
+                      <tr class="border-t border-t-[#e0e0e0] hover:bg-gray-50 transition-colors">
+                        <td class="table-28a7452e-771b-4294-87cc-8abebc5d776d-column-120 h-[72px] px-4 py-2 w-[400px] text-[#141414] text-sm font-normal leading-normal">Javier Morales</td>
+                        <td class="table-28a7452e-771b-4294-87cc-8abebc5d776d-column-240 h-[72px] px-4 py-2 w-[400px] text-[#757575] text-sm font-normal leading-normal">Migraña</td>
+                        <td class="table-28a7452e-771b-4294-87cc-8abebc5d776d-column-360 h-[72px] px-4 py-2 w-[400px] text-[#757575] text-sm font-normal leading-normal">Hace 2 meses</td>
+                        <td class="table-28a7452e-771b-4294-87cc-8abebc5d776d-column-480 h-[72px] px-4 py-2 w-60 text-sm font-normal leading-normal">
+                          <button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-8 px-4 bg-[#f2f2f2] text-[#141414] text-sm font-medium leading-normal w-full hover:bg-gray-300 transition-colors">
+                            <span class="truncate">Confirmado</span>
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <style>
+                  @container(max-width:120px){.table-28a7452e-771b-4294-87cc-8abebc5d776d-column-120{display: none;}}
+                  @container(max-width:240px){.table-28a7452e-771b-4294-87cc-8abebc5d776d-column-240{display: none;}}
+                  @container(max-width:360px){.table-28a7452e-771b-4294-87cc-8abebc5d776d-column-360{display: none;}}
+                  @container(max-width:480px){.table-28a7452e-771b-4294-87cc-8abebc5d776d-column-480{display: none;}}
+                </style>
+              </div>
+              <h2 class="text-[#141414] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Rendimiento</h2>
+              <div class="flex flex-wrap gap-4 px-4 py-6">
+                <div class="flex min-w-72 flex-1 flex-col gap-2 rounded-xl border border-[#e0e0e0] p-6 bg-white shadow">
+                  <p class="text-[#141414] text-base font-medium leading-normal">Consultas por día</p>
+                  <p class="text-[#141414] tracking-light text-[32px] font-bold leading-tight truncate">15</p>
+                  <div class="flex gap-1">
+                    <p class="text-[#757575] text-base font-normal leading-normal">Últimos 7 días</p>
+                    <p class="text-[#078807] text-base font-medium leading-normal">+10%</p>
+                  </div>
+                  <div class="flex min-h-[180px] flex-1 flex-col gap-8 py-4">
+                    <svg width="100%" height="148" viewBox="-3 0 478 150" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+                      <path d="M0 109C18.1538 109 18.1538 21 36.3077 21C54.4615 21 54.4615 41 72.6154 41C90.7692 41 90.7692 93 108.923 93C127.077 93 127.077 33 145.231 33C163.385 33 163.385 101 181.538 101C199.692 101 199.692 61 217.846 61C236 61 236 45 254.154 45C272.308 45 272.308 121 290.462 121C308.615 121 308.615 149 326.769 149C344.923 149 344.923 1 363.077 1C381.231 1 381.231 81 399.385 81C417.538 81 417.538 129 435.692 129C453.846 129 453.846 25 472 25V149H326.769H0V109Z" fill="url(#paint0_linear_1131_5935_dashboard)"></path>
+                      <path d="M0 109C18.1538 109 18.1538 21 36.3077 21C54.4615 21 54.4615 41 72.6154 41C90.7692 41 90.7692 93 108.923 93C127.077 93 127.077 33 145.231 33C163.385 33 163.385 101 181.538 101C199.692 101 199.692 61 217.846 61C236 61 236 45 254.154 45C272.308 45 272.308 121 290.462 121C308.615 121 308.615 149 326.769 149C344.923 149 344.923 1 363.077 1C381.231 1 381.231 81 399.385 81C417.538 81 417.538 129 435.692 129C453.846 129 453.846 25 472 25" stroke="#757575" stroke-width="3" stroke-linecap="round"></path>
+                      <defs>
+                        <linearGradient id="paint0_linear_1131_5935_dashboard" x1="236" y1="1" x2="236" y2="149" gradientUnits="userSpaceOnUse">
+                          <stop stop-color="#f2f2f2"></stop>
+                          <stop offset="1" stop-color="#f2f2f2" stop-opacity="0"></stop>
+                        </linearGradient>
+                      </defs>
+                    </svg>
+                    <div class="flex justify-around">
+                      <p class="text-[#757575] text-[13px] font-bold leading-normal tracking-[0.015em]">Lun</p>
+                      <p class="text-[#757575] text-[13px] font-bold leading-normal tracking-[0.015em]">Mar</p>
+                      <p class="text-[#757575] text-[13px] font-bold leading-normal tracking-[0.015em]">Mié</p>
+                      <p class="text-[#757575] text-[13px] font-bold leading-normal tracking-[0.015em]">Jue</p>
+                      <p class="text-[#757575] text-[13px] font-bold leading-normal tracking-[0.015em]">Vie</p>
+                      <p class="text-[#757575] text-[13px] font-bold leading-normal tracking-[0.015em]">Sáb</p>
+                      <p class="text-[#757575] text-[13px] font-bold leading-normal tracking-[0.015em]">Dom</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="flex min-w-72 flex-1 flex-col gap-2 rounded-xl border border-[#e0e0e0] p-6 bg-white shadow">
+                  <p class="text-[#141414] text-base font-medium leading-normal">Satisfacción</p>
+                  <p class="text-[#141414] tracking-light text-[32px] font-bold leading-tight truncate">95%</p>
+                  <div class="flex gap-1">
+                    <p class="text-[#757575] text-base font-normal leading-normal">Últimos 30 días</p>
+                    <p class="text-[#e70808] text-base font-medium leading-normal">-2%</p>
+                  </div>
+                  <div class="grid min-h-[180px] grid-flow-col gap-6 grid-rows-[1fr_auto] items-end justify-items-center px-3">
+                    <div class="border-[#757575] bg-[#f2f2f2] border-t-2 w-full rounded-t-md" style="height: 100%;"></div>
+                    <p class="text-[#757575] text-[13px] font-bold leading-normal tracking-[0.015em]">Ene</p>
+                    <div class="border-[#757575] bg-[#f2f2f2] border-t-2 w-full rounded-t-md" style="height: 100%;"></div>
+                    <p class="text-[#757575] text-[13px] font-bold leading-normal tracking-[0.015em]">Feb</p>
+                    <div class="border-[#757575] bg-[#f2f2f2] border-t-2 w-full rounded-t-md" style="height: 20%;"></div>
+                    <p class="text-[#757575] text-[13px] font-bold leading-normal tracking-[0.015em]">Mar</p>
+                    <div class="border-[#757575] bg-[#f2f2f2] border-t-2 w-full rounded-t-md" style="height: 30%;"></div>
+                    <p class="text-[#757575] text-[13px] font-bold leading-normal tracking-[0.015em]">Abr</p>
+                    <div class="border-[#757575] bg-[#f2f2f2] border-t-2 w-full rounded-t-md" style="height: 80%;"></div>
+                    <p class="text-[#757575] text-[13px] font-bold leading-normal tracking-[0.015em]">May</p>
+                    <div class="border-[#757575] bg-[#f2f2f2] border-t-2 w-full rounded-t-md" style="height: 70%;"></div>
+                    <p class="text-[#757575] text-[13px] font-bold leading-normal tracking-[0.015em]">Jun</p>
+                  </div>
+                </div>
+                <div class="flex min-w-72 flex-1 flex-col gap-2 rounded-xl border border-[#e0e0e0] p-6 bg-white shadow">
+                  <p class="text-[#141414] text-base font-medium leading-normal">Precisión de IA</p>
+                  <p class="text-[#141414] tracking-light text-[32px] font-bold leading-tight truncate">98%</p>
+                  <div class="flex gap-1">
+                    <p class="text-[#757575] text-base font-normal leading-normal">Últimos 30 días</p>
+                    <p class="text-[#078807] text-base font-medium leading-normal">+3%</p>
+                  </div>
+                  <div class="grid min-h-[180px] grid-flow-col gap-6 grid-rows-[1fr_auto] items-end justify-items-center px-3">
+                    <div class="border-[#757575] bg-[#f2f2f2] border-t-2 w-full rounded-t-md" style="height: 75%;"></div>
+                    <p class="text-[#757575] text-[13px] font-bold leading-normal tracking-[0.015em]">Q1</p>
+                    <div class="border-[#757575] bg-[#f2f2f2] border-t-2 w-full rounded-t-md" style="height: 80%;"></div>
+                    <p class="text-[#757575] text-[13px] font-bold leading-normal tracking-[0.015em]">Q2</p>
+                    <div class="border-[#757575] bg-[#f2f2f2] border-t-2 w-full rounded-t-md" style="height: 88%;"></div>
+                    <p class="text-[#757575] text-[13px] font-bold leading-normal tracking-[0.015em]">Q3</p>
+                    <div class="border-[#757575] bg-[#f2f2f2] border-t-2 w-full rounded-t-md" style="height: 92%;"></div>
+                    <p class="text-[#757575] text-[13px] font-bold leading-normal tracking-[0.015em]">Q4</p>
+                    <div class="border-[#757575] bg-[#f2f2f2] border-t-2 w-full rounded-t-md" style="height: 95%;"></div>
+                    <p class="text-[#757575] text-[13px] font-bold leading-normal tracking-[0.015em]">Actual</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contenedor para la vista de Historial del Paciente -->
+    <div id="historial-view" class="page-view hidden">
+      <div class="relative flex size-full min-h-screen flex-col bg-white group/design-root overflow-x-hidden">
+        <div class="layout-container flex h-full grow flex-col">
+          <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#f2f2f2] px-10 py-3">
+            <div class="flex items-center gap-4 text-[#141414]">
+              <div class="size-4">
+                <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M44 4H30.6666V17.3334H17.3334V30.6666H4V44H44V4Z" fill="currentColor"></path></svg>
+              </div>
+              <h2 class="text-[#141414] text-lg font-bold leading-tight tracking-[-0.015em]">HEALTSCOPEAI</h2>
+            </div>
+            <div class="flex flex-1 justify-end gap-8">
+              <div class="flex items-center gap-9">
+                <a class="text-[#141414] text-sm font-medium leading-normal hover:text-blue-600" href="#">Panel</a>
+                <a class="text-[#141414] text-sm font-medium leading-normal hover:text-blue-600" href="#">Pacientes</a>
+                <a class="text-[#141414] text-sm font-medium leading-normal hover:text-blue-600" href="#">Mensajes</a>
+                <a class="text-[#141414] text-sm font-medium leading-normal hover:text-blue-600" href="#">Horario</a>
+                <a class="text-[#141414] text-sm font-medium leading-normal hover:text-blue-600" href="#">Facturación</a>
+              </div>
+              <button class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 bg-[#f2f2f2] text-[#141414] gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5 hover:bg-gray-300">
+                <div class="text-[#141414]" data-icon="Bell" data-size="20px" data-weight="regular">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+                    <path d="M221.8,175.94C216.25,166.38,208,139.33,208,104a80,80,0,1,0-160,0c0,35.34-8.26,62.38-13.81,71.94A16,16,0,0,0,48,200H88.81a40,40,0,0,0,78.38,0H208a16,16,0,0,0,13.8-24.06ZM128,216a24,24,0,0,1-22.62-16h45.24A24,24,0,0,1,128,216ZM48,184c7.7-13.24,16-43.92,16-80a64,64,0,1,1,128,0c0,36.05,8.28,66.73,16,80Z"></path>
+                  </svg>
+                </div>
+              </button>
+              <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10" style='background-image: url("https://placehold.co/40x40/E0E0E0/757575?text=S");'></div>
+            </div>
+          </header>
+          <div class="px-4 sm:px-10 md:px-40 flex flex-1 justify-center py-5">
+            <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
+              <div class="flex flex-wrap justify-between gap-3 p-4">
+                <div class="flex min-w-72 flex-col gap-3">
+                  <p class="text-[#141414] tracking-light text-[32px] font-bold leading-tight">Historial del Paciente</p>
+                  <p class="text-[#757575] text-sm font-normal leading-normal">Ver y gestionar los registros del paciente</p>
+                </div>
+              </div>
+              <h3 class="text-[#141414] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">Información del Paciente</h3>
+              <div class="p-4 grid grid-cols-[auto_1fr] sm:grid-cols-[20%_1fr] gap-x-6">
+                <div class="col-span-2 grid grid-cols-subgrid border-t border-t-[#e0e0e0] py-5">
+                  <p class="text-[#757575] text-sm font-normal leading-normal">Nombre</p>
+                  <p class="text-[#141414] text-sm font-normal leading-normal">Sofía Clark</p>
+                </div>
+                <div class="col-span-2 grid grid-cols-subgrid border-t border-t-[#e0e0e0] py-5">
+                  <p class="text-[#757575] text-sm font-normal leading-normal">Edad</p>
+                  <p class="text-[#141414] text-sm font-normal leading-normal">35</p>
+                </div>
+                <div class="col-span-2 grid grid-cols-subgrid border-t border-t-[#e0e0e0] py-5">
+                  <p class="text-[#757575] text-sm font-normal leading-normal">ID del Paciente</p>
+                  <p class="text-[#141414] text-sm font-normal leading-normal">PT123456</p>
+                </div>
+              </div>
+              <h3 class="text-[#141414] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">Tratamientos Activos</h3>
+              <div class="px-4 py-3 @container">
+                <div class="flex overflow-auto rounded-xl border border-[#e0e0e0] bg-white shadow">
+                  <table class="flex-1 min-w-[600px]">
+                    <thead>
+                      <tr class="bg-white">
+                        <th class="table-84b5504a-257b-4255-8cb5-64eca281e851-column-120 px-4 py-3 text-left text-[#141414] w-[40%] sm:w-[400px] text-sm font-medium leading-normal">Tratamiento</th>
+                        <th class="table-84b5504a-257b-4255-8cb5-64eca281e851-column-240 px-4 py-3 text-left text-[#141414] w-[25%] sm:w-[400px] text-sm font-medium leading-normal">Fecha de Inicio</th>
+                        <th class="table-84b5504a-257b-4255-8cb5-64eca281e851-column-360 px-4 py-3 text-left text-[#141414] w-[25%] sm:w-[400px] text-sm font-medium leading-normal">Fecha de Fin</th>
+                        <th class="table-84b5504a-257b-4255-8cb5-64eca281e851-column-480 px-4 py-3 text-left text-[#141414] w-[10%] sm:w-60 text-sm font-medium leading-normal">Estado</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr class="border-t border-t-[#e0e0e0]">
+                        <td class="table-84b5504a-257b-4255-8cb5-64eca281e851-column-120 h-[72px] px-4 py-2 text-[#141414] text-sm font-normal leading-normal">Terapia Física</td>
+                        <td class="table-84b5504a-257b-4255-8cb5-64eca281e851-column-240 h-[72px] px-4 py-2 text-[#757575] text-sm font-normal leading-normal">2023-08-15</td>
+                        <td class="table-84b5504a-257b-4255-8cb5-64eca281e851-column-360 h-[72px] px-4 py-2 text-[#757575] text-sm font-normal leading-normal">2023-11-15</td>
+                        <td class="table-84b5504a-257b-4255-8cb5-64eca281e851-column-480 h-[72px] px-4 py-2">
+                          <button class="flex min-w-[84px] w-full cursor-pointer items-center justify-center overflow-hidden rounded-full h-8 px-4 bg-[#f2f2f2] text-[#141414] text-sm font-medium leading-normal hover:bg-gray-300">
+                            <span class="truncate">Completado</span>
+                          </button>
+                        </td>
+                      </tr>
+                      <tr class="border-t border-t-[#e0e0e0]">
+                        <td class="table-84b5504a-257b-4255-8cb5-64eca281e851-column-120 h-[72px] px-4 py-2 text-[#141414] text-sm font-normal leading-normal">Medicación</td>
+                        <td class="table-84b5504a-257b-4255-8cb5-64eca281e851-column-240 h-[72px] px-4 py-2 text-[#757575] text-sm font-normal leading-normal">2023-09-01</td>
+                        <td class="table-84b5504a-257b-4255-8cb5-64eca281e851-column-360 h-[72px] px-4 py-2 text-[#757575] text-sm font-normal leading-normal">2024-03-01</td>
+                        <td class="table-84b5504a-257b-4255-8cb5-64eca281e851-column-480 h-[72px] px-4 py-2">
+                          <button class="flex min-w-[84px] w-full cursor-pointer items-center justify-center overflow-hidden rounded-full h-8 px-4 bg-[#f2f2f2] text-[#141414] text-sm font-medium leading-normal hover:bg-gray-300">
+                            <span class="truncate">Activo</span>
+                          </button>
+                        </td>
+                      </tr>
+                      <tr class="border-t border-t-[#e0e0e0]">
+                        <td class="table-84b5504a-257b-4255-8cb5-64eca281e851-column-120 h-[72px] px-4 py-2 text-[#141414] text-sm font-normal leading-normal">Plan de Dieta</td>
+                        <td class="table-84b5504a-257b-4255-8cb5-64eca281e851-column-240 h-[72px] px-4 py-2 text-[#757575] text-sm font-normal leading-normal">2023-10-01</td>
+                        <td class="table-84b5504a-257b-4255-8cb5-64eca281e851-column-360 h-[72px] px-4 py-2 text-[#757575] text-sm font-normal leading-normal">2024-01-01</td>
+                        <td class="table-84b5504a-257b-4255-8cb5-64eca281e851-column-480 h-[72px] px-4 py-2">
+                          <button class="flex min-w-[84px] w-full cursor-pointer items-center justify-center overflow-hidden rounded-full h-8 px-4 bg-[#f2f2f2] text-[#141414] text-sm font-medium leading-normal hover:bg-gray-300">
+                            <span class="truncate">Activo</span>
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <style>
+                  @container(max-width:120px){.table-84b5504a-257b-4255-8cb5-64eca281e851-column-120{display: none;}}
+                  @container(max-width:240px){.table-84b5504a-257b-4255-8cb5-64eca281e851-column-240{display: none;}}
+                  @container(max-width:360px){.table-84b5504a-257b-4255-8cb5-64eca281e851-column-360{display: none;}}
+                  @container(max-width:480px){.table-84b5504a-257b-4255-8cb5-64eca281e851-column-480{display: none;}}
+                </style>
+              </div>
+              <h3 class="text-[#141414] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">Recomendaciones Enviadas</h3>
+              <div class="px-4 py-3 @container">
+                <div class="flex overflow-auto rounded-xl border border-[#e0e0e0] bg-white shadow">
+                  <table class="flex-1 min-w-[600px]">
+                    <thead>
+                      <tr class="bg-white">
+                        <th class="table-95d10efc-1835-4cf0-8ea4-c97010a4daec-column-120 px-4 py-3 text-left text-[#141414] w-[30%] sm:w-[400px] text-sm font-medium leading-normal">Fecha</th>
+                        <th class="table-95d10efc-1835-4cf0-8ea4-c97010a4daec-column-240 px-4 py-3 text-left text-[#141414] w-[50%] sm:w-[400px] text-sm font-medium leading-normal">Recomendación</th>
+                        <th class="table-95d10efc-1835-4cf0-8ea4-c97010a4daec-column-360 px-4 py-3 text-left text-[#141414] w-[20%] sm:w-60 text-sm font-medium leading-normal">Estado</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr class="border-t border-t-[#e0e0e0]">
+                        <td class="table-95d10efc-1835-4cf0-8ea4-c97010a4daec-column-120 h-[72px] px-4 py-2 text-[#757575] text-sm font-normal leading-normal">2023-08-10</td>
+                        <td class="table-95d10efc-1835-4cf0-8ea4-c97010a4daec-column-240 h-[72px] px-4 py-2 text-[#141414] text-sm font-normal leading-normal">Referencia de Terapia Física</td>
+                        <td class="table-95d10efc-1835-4cf0-8ea4-c97010a4daec-column-360 h-[72px] px-4 py-2">
+                          <button class="flex min-w-[84px] w-full cursor-pointer items-center justify-center overflow-hidden rounded-full h-8 px-4 bg-[#f2f2f2] text-[#141414] text-sm font-medium leading-normal hover:bg-gray-300">
+                            <span class="truncate">Enviado</span>
+                          </button>
+                        </td>
+                      </tr>
+                      <tr class="border-t border-t-[#e0e0e0]">
+                        <td class="table-95d10efc-1835-4cf0-8ea4-c97010a4daec-column-120 h-[72px] px-4 py-2 text-[#757575] text-sm font-normal leading-normal">2023-09-05</td>
+                        <td class="table-95d10efc-1835-4cf0-8ea4-c97010a4daec-column-240 h-[72px] px-4 py-2 text-[#141414] text-sm font-normal leading-normal">Prescripción de Medicamentos</td>
+                        <td class="table-95d10efc-1835-4cf0-8ea4-c97010a4daec-column-360 h-[72px] px-4 py-2">
+                          <button class="flex min-w-[84px] w-full cursor-pointer items-center justify-center overflow-hidden rounded-full h-8 px-4 bg-[#f2f2f2] text-[#141414] text-sm font-medium leading-normal hover:bg-gray-300">
+                            <span class="truncate">Enviado</span>
+                          </button>
+                        </td>
+                      </tr>
+                      <tr class="border-t border-t-[#e0e0e0]">
+                        <td class="table-95d10efc-1835-4cf0-8ea4-c97010a4daec-column-120 h-[72px] px-4 py-2 text-[#757575] text-sm font-normal leading-normal">2023-10-15</td>
+                        <td class="table-95d10efc-1835-4cf0-8ea4-c97010a4daec-column-240 h-[72px] px-4 py-2 text-[#141414] text-sm font-normal leading-normal">Sugerencia de Plan de Dieta</td>
+                        <td class="table-95d10efc-1835-4cf0-8ea4-c97010a4daec-column-360 h-[72px] px-4 py-2">
+                          <button class="flex min-w-[84px] w-full cursor-pointer items-center justify-center overflow-hidden rounded-full h-8 px-4 bg-[#f2f2f2] text-[#141414] text-sm font-medium leading-normal hover:bg-gray-300">
+                            <span class="truncate">Enviado</span>
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <style>
+                  @container(max-width:120px){.table-95d10efc-1835-4cf0-8ea4-c97010a4daec-column-120{display: none;}}
+                  @container(max-width:240px){.table-95d10efc-1835-4cf0-8ea4-c97010a4daec-column-240{display: none;}}
+                  @container(max-width:360px){.table-95d10efc-1835-4cf0-8ea4-c97010a4daec-column-360{display: none;}}
+                </style>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contenedor para la vista de Subir Imagen Médica -->
+    <div id="upload-view" class="page-view hidden">
+      <div class="relative flex size-full min-h-screen flex-col bg-white group/design-root overflow-x-hidden custom-select-style">
+        <div class="layout-container flex h-full grow flex-col">
+          <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#f2f2f2] px-10 py-3">
+            <div class="flex items-center gap-4 text-[#141414]">
+              <div class="size-4">
+                <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M44 4H30.6666V17.3334H17.3334V30.6666H4V44H44V4Z" fill="currentColor"></path></svg>
+              </div>
+              <h2 class="text-[#141414] text-lg font-bold leading-tight tracking-[-0.015em]">HEALTSCOPEAI</h2>
+            </div>
+            <div class="flex flex-1 justify-end gap-8">
+              <div class="flex items-center gap-9">
+                <a class="text-[#141414] text-sm font-medium leading-normal hover:text-blue-600" href="#">Panel</a>
+                <a class="text-[#141414] text-sm font-medium leading-normal hover:text-blue-600" href="#">Pacientes</a>
+                <a class="text-[#141414] text-sm font-medium leading-normal hover:text-blue-600" href="#">Informes</a>
+                <a class="text-[#141414] text-sm font-medium leading-normal hover:text-blue-600" href="#">Configuración</a>
+              </div>
+              <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10" style='background-image: url("https://placehold.co/40x40/E0E0E0/757575?text=U");'></div>
+            </div>
+          </header>
+          <div class="px-4 sm:px-10 md:px-40 flex flex-1 justify-center py-5">
+            <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
+              <div class="flex flex-wrap justify-between gap-3 p-4">
+                <p class="text-[#141414] tracking-light text-[32px] font-bold leading-tight min-w-72">Subir Imagen Médica</p>
+              </div>
+              <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
+                <label class="flex flex-col min-w-40 flex-1">
+                  <span class="text-[#141414] text-sm font-medium leading-normal pb-1">Tipo de Imagen</span>
+                  <select class="form-select flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#141414] focus:outline-0 focus:ring-0 border border-[#e0e0e0] bg-white focus:border-[#e0e0e0] h-14 bg-[image:var(--select-button-svg)] placeholder:text-[#757575] p-[15px] text-base font-normal leading-normal appearance-none">
+                    <option value="">Seleccionar tipo...</option>
+                    <option value="radiografia">Radiografía</option>
+                    <option value="tomografia">Tomografía (TAC)</option>
+                    <option value="resonancia">Resonancia Magnética (RM)</option>
+                    <option value="ecografia">Ecografía</option>
+                    <option value="otra">Otra</option>
+                  </select>
+                </label>
+              </div>
+              <div class="flex flex-col p-4">
+                <div class="flex flex-col items-center gap-6 rounded-xl border-2 border-dashed border-[#e0e0e0] px-6 py-14 bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer">
+                  <input type="file" id="fileUpload" class="hidden" accept="image/jpeg, image/png">
+                  <label for="fileUpload" class="w-full flex flex-col items-center gap-2 cursor-pointer">
+                    <svg class="w-12 h-12 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.338 0 4.5 4.5 0 01-1.41 8.775H6.75z" />
+                    </svg>
+                    <p class="text-[#141414] text-lg font-bold leading-tight tracking-[-0.015em] max-w-[480px] text-center">Arrastra y suelta o explora</p>
+                    <p class="text-[#757575] text-sm font-normal leading-normal max-w-[480px] text-center">JPG o PNG (máx. 5MB)</p>
+                  </label>
+                  <button onclick="document.getElementById('fileUpload').click();" class="mt-2 flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 bg-[#f2f2f2] text-[#141414] text-sm font-bold leading-normal tracking-[0.015em] hover:bg-gray-300">
+                    <span class="truncate">Explorar Archivos</span>
+                  </button>
+                   <p id="fileName" class="text-sm text-gray-500 mt-2"></p>
+                </div>
+              </div>
+              <div class="flex px-4 py-3 justify-end">
+                <button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 bg-black text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-gray-800 transition-colors">
+                  <span class="truncate">Analizar</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const navButtons = document.querySelectorAll('.nav-button');
+        const pageViews = document.querySelectorAll('.page-view');
+        // Establecer la vista de Dashboard como la activa por defecto
+        const initialView = document.getElementById('dashboard-view');
+        const initialButton = document.querySelector('.nav-button[data-target="dashboard-view"]');
+
+        // Ocultar todas las vistas excepto la inicial
+        pageViews.forEach(view => {
+          if (view.id !== initialView.id) {
+            view.classList.add('hidden');
+          } else {
+            view.classList.remove('hidden'); // Asegurar que la vista inicial esté visible
+          }
+        });
+        if(initialButton) initialButton.classList.add('active');
+
+
+        navButtons.forEach(button => {
+          button.addEventListener('click', () => {
+            const targetId = button.getAttribute('data-target');
+            const targetView = document.getElementById(targetId);
+
+            // Quitar clase 'active' de todos los botones y ocultar todas las vistas
+            navButtons.forEach(btn => btn.classList.remove('active'));
+            pageViews.forEach(view => view.classList.add('hidden'));
+
+            // Añadir clase 'active' al botón clickeado y mostrar la vista correspondiente
+            button.classList.add('active');
+            if (targetView) {
+              targetView.classList.remove('hidden');
+            }
+          });
+        });
+
+        // Manejo de subida de archivo para la vista 'Subir Imagen'
+        const fileUploadInput = document.getElementById('fileUpload');
+        const fileNameDisplay = document.getElementById('fileName');
+        if (fileUploadInput && fileNameDisplay) {
+            fileUploadInput.addEventListener('change', (event) => {
+                if (event.target.files && event.target.files.length > 0) {
+                    fileNameDisplay.textContent = event.target.files[0].name;
+                } else {
+                    fileNameDisplay.textContent = '';
+                }
+            });
+        }
+      });
+    </script>
+</body>
+</html>
